@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Login Page</title>
+    <link rel="stylesheet" href="userlogin.css" />
+</head>
+<body>
+
+    <div class="layout">
+
+        <!-- Chat History Sidebar -->
+        <div class="chat-history">
+            <h3>Chat History</h3>
+            <ul id="conversationList"></ul>
+            <div class="add-convo-container">
+                <button id="addConvoBtn">+ New Conversation</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Login on top right -->
+            <div class="login-wrapper">
+                <button id="loginButton">Welcome, User123</button>
+            </div>
+
+            <!-- Logo -->
+            <div class="container" id="logo">
+                <img src="slacknew.png" alt="Logo" />
+                <h1 style="display: inline-block;">KalasagAI</h1>
+            </div>
+
+            <!-- Hamburger Menu -->
+            <div class="menu-icon" onclick="toggleAboutMenu()">☰</div>
+
+            <div id="aboutMenu" class="about-menu">
+                <ul>
+                <li><a href="#featuresModal">Features</a></li>
+                <li><a href="#overviewModal">Overview</a></li>
+                <li><a href="#chatbotModal">Our Chatbot</a></li>
+                <li><a href="#developersModal">Developers</a></li>
+                </ul>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-container"> 
+                <div class="chat-messages">
+                    <!-- Messages will appear here -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="userInput" placeholder="Type your message..." />
+                    <button id="sendBtn">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURES MODAL -->
+    <div id="featuresModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2>Features</h2>
+        <ul>
+        <li>Explain Phishing Terms</li>
+        <li>Generate Steps for Action</li>
+        <li>Instant 24/7 Help</li>
+        </ul>
+    </div>
+    </div>
+
+    <!-- OVERVIEW MODAL -->
+    <div id="overviewModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2>Overview</h2>
+        <p>On progress</p>
+    </div>
+    </div>
+
+    <!-- CHATBOT MODAL -->
+    <div id="chatbotModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2>Our Chatbot</h2>
+        <p>KasalagAI”</p>
+    </div>
+    </div>
+
+    <!-- DEVELOPERS MODAL -->
+    <div id="developersModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2 style="text-align: center;">Developers</h2>
+        <p style="text-align: center;">Explore the API and integrate KalasagAI into your applications.</p>
+        <div class="developers-container">
+        <!-- Developer Cards -->
+        <div class="developer-card">
+            <img src="daniel.png" alt="De Guia, John Daniel" />
+            <p><strong>De Guia, John Daniel</strong><br>Project Manager/Lead Developer</p>
+        </div>
+        <div class="developer-card">
+            <img src="cedrick.png" alt="Chan, Cedrick Angelo" />
+            <p><strong>Chan, Cedrick Angelo</strong><br>Frontend Developer/QA</p>
+        </div>
+        <div class="developer-card">
+            <img src="roman.png" alt="Rueven, Roman" />
+            <p><strong>Rueven, Roman</strong><br>Database Developer</p>
+        </div>
+        <div class="developer-card">
+            <img src="patricia.png" alt="Navarro, Patricia" />
+            <p><strong>Navarro, Patricia</strong><br>Researcher/QA</p>
+        </div>
+        <div class="developer-card">
+            <img src="msmarilyn.png" alt="Ms. Marilyn Sanchez" />
+            <p><strong>Ms. Marilyn Sanchez</strong><br>Group Adviser</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Dropdown -->
+    <div id="loginDropdown" class="login-dropdown">
+        <ul>
+            <li id="logoutOption">Logout</li>
+        </ul>
+    </div>
+
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+    <div class="modal-content">
+        <h3>Are you sure you want to logout?</h3>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button id="cancelLogout">Cancel</button>
+        <button id="confirmLogout">Logout</button>
+        </div>
+    </div>
+    </div>
+
+
+
+    <!-- Scripts -->
+    <script>
+    // Chat logic
+    const sendBtn = document.getElementById("sendBtn");
+    const userInput = document.getElementById("userInput");
+    const chatMessages = document.querySelector(".chat-messages");
+    const addConvoBtn = document.getElementById("addConvoBtn");
+    const conversationList = document.getElementById("conversationList");
+
+    sendBtn.addEventListener("click", async () => {
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        appendMessage("You", message);
+        userInput.value = "";
+
+            try {
+            const res = await fetch("http://localhost:5005/webhooks/rest/webhook", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sender: "user123", message: message }),
+            });
+            const data = await res.json();
+            data.forEach(msg => appendMessage("Kalasag", msg.text));
+        } catch {
+            appendMessage("Kalasag", "⚠️ Sorry, I couldn’t connect to the server.");
+        }
+    });
+
+    userInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") sendBtn.click();
+    });
+
+    function appendMessage(sender, text) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = sender === "You" ? "user-message" : "bot-message";
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    addConvoBtn.addEventListener("click", () => {
+    const index = conversationList.children.length + 1;
+    const newConvo = document.createElement("li");
+    newConvo.textContent = `Conversation ${index}`;
+    newConvo.classList.add("conversation-item");
+
+    newConvo.addEventListener("click", () => {
+        resetChat();
+        setActiveConversation(newConvo);
+    });
+
+    conversationList.appendChild(newConvo);
+    resetChat(); // optional: auto-reset when created
+    setActiveConversation(newConvo);
+    });
+
+    // Hamburger menu
+    function toggleAboutMenu() {
+        const menu = document.getElementById("aboutMenu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    document.addEventListener("click", function (event) {
+        const menu = document.getElementById("aboutMenu");
+        const icon = document.querySelector(".menu-icon");
+        if (!menu.contains(event.target) && !icon.contains(event.target)) {
+            menu.style.display = "none";
+        }
+    });
+
+    // Login dropdown + logout modal
+    const loginBtn = document.getElementById("loginButton");
+    const loginDropdown = document.getElementById("loginDropdown");
+    const logoutOption = document.getElementById("logoutOption");
+    const logoutModal = document.getElementById("logoutModal");
+    const cancelLogout = document.getElementById("cancelLogout");
+    const confirmLogout = document.getElementById("confirmLogout");
+
+    loginBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // prevent it from closing immediately
+        loginDropdown.style.display = 
+            loginDropdown.style.display === "block" ? "none" : "block";
+    });
+
+    logoutOption.addEventListener("click", () => {
+        loginDropdown.style.display = "none";
+        logoutModal.style.display = "flex";
+    });
+
+    cancelLogout.addEventListener("click", () => {
+        logoutModal.style.display = "none";
+    });
+
+    confirmLogout.addEventListener("click", () => {
+        window.location.href = "login.html"; // simulate logout
+    });
+
+    document.addEventListener("click", (e) => {
+        if (
+            !loginBtn.contains(e.target) &&
+            !loginDropdown.contains(e.target)
+        ) {
+            loginDropdown.style.display = "none";
+        }
+    });
+
+    // Close modals when clicking outside
+    window.addEventListener("click", function (event) {
+        const modals = document.querySelectorAll(".modal");
+        modals.forEach((modal) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+
+    function resetChat() {
+        chatMessages.innerHTML = "";
+        userInput.value = "";
+    }
+
+    function setActiveConversation(selectedItem) {
+        const allItems = conversationList.querySelectorAll("li");
+        allItems.forEach(item => item.classList.remove("active-convo"));
+        selectedItem.classList.add("active-convo");
+    }
+
+</script>
+
+
+
+
+</body>
+</html>

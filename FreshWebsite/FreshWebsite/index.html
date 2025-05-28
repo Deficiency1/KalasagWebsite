@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Page</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container" id="logo">
+        <img src="slacknew.png" alt="Logo" />
+        <h1 style="display: inline-block;">KalasagAI</h1>
+    </div>   
+
+    <div class="login-wrapper">
+        <a href="login.html" id="login">Login</a>
+    </div>  
+    
+    <!-- Hamburger Menu -->
+    <div class="menu-icon" onclick="toggleAboutMenu()">☰</div>
+    <div id="aboutMenu" class="about-menu">
+        <ul>
+        <li><a href="#featuresModal">Features</a></li>
+        <li><a href="#overviewModal">Overview</a></li>
+        <li><a href="#chatbotModal">Our Chatbot</a></li>
+        <li><a href="#developersModal">Developers</a></li>
+        </ul>
+    </div>
+
+    <div class="chat-container"> 
+        <div class="chat-messages">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button id="sendBtn">Send</button>
+
+        </div>
+    </div>
+
+
+        <!-- FEATURES MODAL -->
+    <div id="featuresModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2>Features</h2>
+        <ul>
+        <li>Explain Phishing Terms</li>
+        <li>Generate Steps for Action</li>
+        <li>Instant 24/7 Help</li>
+        </ul>
+    </div>
+    </div>
+
+    <!-- OVERVIEW MODAL -->
+    <div id="overviewModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2>Overview</h2>
+        <p>On progress</p>
+    </div>
+    </div>
+
+    <!-- CHATBOT MODAL -->
+    <div id="chatbotModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2>Our Chatbot</h2>
+        <p>KasalagAI”</p>
+    </div>
+    </div>
+
+    <!-- DEVELOPERS MODAL -->
+    <div id="developersModal" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <h2 style="text-align: center;">Developers</h2>
+        <p style="text-align: center;">Explore the API and integrate KalasagAI into your applications.</p>
+        <div class="developers-container">
+        <!-- Developer Cards -->
+        <div class="developer-card">
+            <img src="daniel.png" alt="De Guia, John Daniel" />
+            <p><strong>De Guia, John Daniel</strong><br>Project Manager/Lead Developer</p>
+        </div>
+        <div class="developer-card">
+            <img src="cedrick.png" alt="Chan, Cedrick Angelo" />
+            <p><strong>Chan, Cedrick Angelo</strong><br>Frontend Developer/QA</p>
+        </div>
+        <div class="developer-card">
+            <img src="roman.png" alt="Rueven, Roman" />
+            <p><strong>Rueven, Roman</strong><br>Database Developer</p>
+        </div>
+        <div class="developer-card">
+            <img src="patricia.png" alt="Navarro, Patricia" />
+            <p><strong>Navarro, Patricia</strong><br>Researcher/QA</p>
+        </div>
+        <div class="developer-card">
+            <img src="msmarilyn.png" alt="Ms. Marilyn Sanchez" />
+            <p><strong>Ms. Marilyn Sanchez</strong><br>Group Adviser</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
+
+    <script>
+        const sendBtn = document.getElementById("sendBtn");
+        const userInput = document.getElementById("userInput");
+        const chatMessages = document.querySelector(".chat-messages");
+    
+        sendBtn.addEventListener("click", async () => {
+            const message = userInput.value.trim();
+            if (!message) return;
+    
+            //Show users message
+            appendMessage("You", message);
+            userInput.value = "";
+    
+            try {
+                const res = await fetch("http://localhost:5005/webhooks/rest/webhook", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sender: "user123", message: message }),
+                });
+                const data = await res.json();
+                data.forEach(msg => appendMessage("Kalasag", msg.text));
+            } catch {
+                appendMessage("Kalasag", "⚠️ Sorry, I couldn’t connect to the server.");
+            }
+        });
+
+        userInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                sendBtn.click();
+            }
+        });
+
+    
+        function appendMessage(sender, text) {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = sender === "You" ? "user-message" : "bot-message";
+            msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+    
+
+    <script>
+        function toggleAboutMenu() {
+            const menu = document.getElementById("aboutMenu");
+            if (menu.style.left === "0px") {
+                menu.style.left = "-300px";
+            } else {
+                menu.style.left = "0px";
+            }
+        }
+        </script>
+        
+        
+    <script>
+  // Close modal if clicked outside the modal-content
+  window.addEventListener('click', function (event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+      if (event.target === modal) {
+        window.location.hash = ''; // Clear the hash to hide modal
+      }
+    });
+  });
+</script>    
+
+</body>
+</html>

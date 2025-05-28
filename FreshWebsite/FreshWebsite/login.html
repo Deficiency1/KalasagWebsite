@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+
+  <div id="logo">
+    <a href="index.html">
+      <img src="slacknew.png" alt="Logo" />
+      <h1>KalasagAI</h1>
+    </a>
+  </div>
+
+  <div id="loginContainer">
+    <h2>Login</h2>
+    
+    <form onsubmit="loginUser(event)" class="formWrapper">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button type="submit" id="login">Login</button>
+    </form>
+
+    <div id="signupContainer">
+      <h2>Don't have an account?</h2>
+      <a href="signup.html">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- only use for demo to proceed to userlogin.html. Remove if linking to actual database -->
+  <script>
+  function loginUser(event) {
+    event.preventDefault(); // prevent form from submitting to server 
+    // You can store user info or add basic validation here
+    window.location.href = "userlogin.html"; // redirect to user page
+  }
+</script>
+
+</body>
+</html>
